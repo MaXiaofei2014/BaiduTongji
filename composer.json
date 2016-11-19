@@ -1,0 +1,19 @@
+{
+    "name": "mushan/baidu_tongji",
+    "description": "Laravel 5",
+    "keywords": [
+        "laravel"
+    ],
+    "autoload": {
+        "psr-4": {
+            "MuShan\\BaiduTongji\\": "src/"
+        }
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "mushan",
+            "email": "804216865@qq.com"
+        }
+    ]
+}
