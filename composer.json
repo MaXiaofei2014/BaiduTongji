@@ -10,7 +10,7 @@
     },
     "autoload": {
         "psr-4": {
-            "MuShan\\BaiduTongji\\": "src/"
+            "Mushan\\BaiduTongji\\": "src/"
         }
     },
     "license": "MIT",
