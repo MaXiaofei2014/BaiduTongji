@@ -1,6 +1,7 @@
 {
     "name": "mushan/baidu-tongji",
     "description": "Laravel 5",
+    "version": "1.0.0",
     "keywords": [
         "laravel"
     ],
