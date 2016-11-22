@@ -4,6 +4,9 @@
     "keywords": [
         "laravel"
     ],
+    "require":{
+        "guzzlehttp/guzzle": "^6.2"
+    },
     "autoload": {
         "psr-4": {
             "MuShan\\BaiduTongji\\": "src/"
