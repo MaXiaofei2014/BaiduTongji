@@ -11,7 +11,7 @@ use Illuminate\Support\ServiceProvider;
 
 class BaiduTongjiServiceProvider extends ServiceProvider
 {
-    protected $defer = true;
+//    protected $defer = true;
 
     public function boot()
     {
