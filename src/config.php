@@ -1,19 +1,19 @@
 <?php
 return [
-    'LOGIN_URL'=>'https://api.baidu.com/sem/common/HolmesLoginService',
+    'login_url'=>'https://api.baidu.com/sem/common/HolmesLoginService',
 
-    'API_URL'=>'https://api.baidu.com/json/tongji/v1/ReportService',
+    'api_url'=>'https://api.baidu.com/json/tongji/v1/ReportService',
 
     /*
      * 唯一标识
      */
-    'UUID'=>'mac',
+    'uuid'=>'******',
 
-    'TOKEN'=>'',
+    'token'=>'',
 
-    'USERNAME'=>'',
+    'username'=>'',
 
-    'PASSWORD'=>'',
+    'password'=>'',
 
     /**
      * 统计用户仅支持如下账户类型：

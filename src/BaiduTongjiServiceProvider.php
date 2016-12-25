@@ -8,6 +8,7 @@
 namespace Mushan\BaiduTongji;
 
 use Illuminate\Support\ServiceProvider;
+use Mushan\BaiduTongji\BaiduTongji;
 
 class BaiduTongjiServiceProvider extends ServiceProvider
 {
@@ -15,15 +16,19 @@ class BaiduTongjiServiceProvider extends ServiceProvider
 
     public function boot()
     {
+        $config_path=__DIR__.'/config.php';
         $this->publishes([
-            __DIR__.'/config.php' => config_path('baidu_tongji.php'),
+            $config_path => config_path('baidu_tongji.php'),
         ]);
+        $this->mergeConfigFrom(
+            $config_path, 'baidu_tongji'
+        );
     }
 
     public function register()
     {
-        $this->mergeConfigFrom(
-            __DIR__.'/config.php', 'baidu_tongji'
-        );
+        $this->app->singleton(BaiduTongji::class,function($app){
+            return new BaiduTongji(config('baidu_tongji'));
+        });
     }
 }
