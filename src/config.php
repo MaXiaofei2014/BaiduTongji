@@ -1,9 +1,5 @@
 <?php
 return [
-    'login_url'=>'https://api.baidu.com/sem/common/HolmesLoginService',
-
-    'api_url'=>'https://api.baidu.com/json/tongji/v1/ReportService',
-
     /*
      * 唯一标识
      */

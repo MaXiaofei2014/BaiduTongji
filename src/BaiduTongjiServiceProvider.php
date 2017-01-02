@@ -27,7 +27,7 @@ class BaiduTongjiServiceProvider extends ServiceProvider
 
     public function register()
     {
-        $this->app->singleton(BaiduTongji::class,function($app){
+        $this->app->singleton('BaiduTongji',function($app){
             return new BaiduTongji(config('baidu_tongji'));
         });
     }

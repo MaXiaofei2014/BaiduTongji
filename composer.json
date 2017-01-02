@@ -4,13 +4,13 @@
     "keywords": [
         "laravel"
     ],
-    "require":{
-        "guzzlehttp/guzzle": "^6.2"
-    },
     "autoload": {
         "psr-4": {
             "Mushan\\BaiduTongji\\": "src/"
-        }
+        },
+        "files": [
+            "src/helpers.php"
+        ]
     },
     "license": "MIT",
     "authors": [
