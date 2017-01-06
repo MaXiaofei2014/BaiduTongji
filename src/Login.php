@@ -17,6 +17,10 @@ EH6YWHP4reFfpMpLzwIDAQAB
 
     private $config;
 
+    private $header;
+
+    public $ucid,$st;
+
     private $error_code=[
         2=>'INVALID_ENCODING: 请求数据的编码错误，非UTF-8',
         3=>'DAMAGED_DATA: 请求数据损坏',
@@ -33,6 +37,12 @@ EH6YWHP4reFfpMpLzwIDAQAB
     public function __construct($config)
     {
         $this->config=$config;
+        $this->header=[
+            'UUID:'.$this->uuid,
+            'account_type:'.$this->account_type,
+            'Content-Type:data/gzencode and rsa public encrypt;charset=UTF-8'
+        ];
+
         $this->public_key_resource=openssl_pkey_get_public(self::PUBLIC_KEY);
     }
 
@@ -63,49 +73,73 @@ EH6YWHP4reFfpMpLzwIDAQAB
         ];
 
         $post_data=$this->encry($post_data);
-        $headers=$this->getHeader();
 
-        $result=curl_post(self::LOGIN_URL,$post_data,$headers);
+        $result=curl_post(self::LOGIN_URL,$post_data,$this->header);
         $result=$this->responseHandle($result);
 
         if($result['code']!=0){
             $error_msg=array_key_exists($result['code'],$this->error_code)?$this->error_code[$result['code']]:'未知错误';
             throw new \Exception($error_msg);
         }
+        return true;
     }
 
-    public function post($url,$data,$header=array())
+    public function doLogin()
     {
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2);
-        curl_setopt($curl, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
-        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
-        curl_setopt($curl, CURLOPT_AUTOREFERER, 1);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
-        curl_setopt($curl, CURLOPT_POST, 1);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($curl, CURLOPT_TIMEOUT, 30);
-        curl_setopt($curl, CURLOPT_HEADER, 0);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        $tmpInfo = curl_exec($curl);
-        if (curl_errno($curl)) {
-            echo '[error] CURL ERROR: ' . curl_error($curl). PHP_EOL;
-        }
-        curl_close($curl);
-        return $tmpInfo;
-    }
-
-    public function getHeader()
-    {
-        $header=[
-            'UUID:'.$this->uuid,
-            'account_type:'.$this->account_type,
-            'Content-Type:data/gzencode and rsa public encrypt;charset=UTF-8'
+        $post_data=[
+            'username'=>$this->username,
+            'token'=>$this->token,
+            'functionName'=>'doLogin',
+            'uuid'=>$this->uuid,
+            'request'=>[
+                'password'=>$this->password
+            ]
         ];
 
-        return $header;
+        $post_data=$this->encry($post_data);
+
+        $result=curl_post(self::LOGIN_URL,$post_data,$this->header);
+        $result=$this->responseHandle($result);
+
+        if($result['code']!=0){
+            $error_msg=array_key_exists($result['code'],$this->error_code)?$this->error_code[$result['code']]:'未知错误';
+            throw new \Exception($error_msg);
+        }
+
+        if($result['data']['retcode']!=0){
+            throw new \Exception($result['data']['retmsg']);
+        }
+
+        $this->ucid=$result['data']['ucid'];
+        $this->st=$result['data']['st'];
+
+        return true;
+    }
+
+    public function doLogout()
+    {
+        $post_data=[
+            'username'=>$this->username,
+            'token'=>$this->token,
+            'functionName'=>'doLogout',
+            'uuid'=>$this->uuid,
+            'request'=>[
+                'ucid'=>$this->ucid,
+                'st'=>$this->st
+            ]
+        ];
+
+        $post_data=$this->encry($post_data);
+
+        $result=curl_post(self::LOGIN_URL,$post_data,$this->header);
+        $result=$this->responseHandle($result);
+
+        if($result['code']!=0){
+            $error_msg=array_key_exists($result['code'],$this->error_code)?$this->error_code[$result['code']]:'未知错误';
+            throw new \Exception($error_msg);
+        }
+
+        return true;
     }
 
     public function encry($data)
@@ -136,7 +170,7 @@ EH6YWHP4reFfpMpLzwIDAQAB
         if ($result['code'] === 0) {
             $result['data'] = substr($data, 8);
 
-            $result['data']= gzdecode($result['data'], strlen($result['data']));
+            $result['data']= json_decode(gzinflate(substr($result['data'],10,-8)),true);
         }
 
         return $result;
