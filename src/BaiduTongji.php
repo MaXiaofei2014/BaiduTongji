@@ -9,10 +9,11 @@
 namespace Mushan\BaiduTongji;
 
 use Mushan\BaiduTongji\Login;
+use Cache;
 
 class BaiduTongji
 {
-    const API_URL='https://api.baidu.com/json/tongji/v1/ProductService/api';
+    const API_URL='https://api.baidu.com/json/tongji/v1/ReportService';
 
     private $config;
 
@@ -23,22 +24,34 @@ class BaiduTongji
     public function __construct($config=array())
     {
         $this->config=$config;
-        $this->login=new Login($config);
-        $this->login->preLogin();
-        $this->login->doLogin();
+        $login=$this->login();
 
         $this->header=[
             'UUID:'.$this->uuid,
-            'USERID:'.$this->login->ucid,
+            'USERID:'.$login['ucid'],
             'Content-Type:data/json;charset=UTF-8'
         ];
 
         $this->post_header=[
             'username'=>$this->username,
-            'password'=>$this->login->st,
+            'password'=>$login['st'],
             'token'=>$this->token,
             'account_type'=>$this->account_type
         ];
+    }
+
+    private function login()
+    {
+        return Cache::remember('baiduTongji-key',3600*6,function(){
+            $this->login=new Login($this->config);
+            $this->login->preLogin();
+            $this->login->doLogin();
+
+            return [
+                'ucid'=>$this->login->ucid,
+                'st'=>$this->login->st
+            ];
+        });
     }
 
     public function __get($name)
@@ -53,62 +66,54 @@ class BaiduTongji
         }
     }
 
-    public function getSiteList()
+    public function getSiteLists($is_concise=false)
     {
-        $result=$this->request([
-            'serviceName'=>'profile',
-            'methodName'=>'getsites',
-        ]);
+        $result=Cache::remember('baiduTongji-siteLists',3600*6,function(){
+            return $this->request('getSiteList',null);
+        });
+
         if(empty($result['list'])){
             throw new \Exception('没有站点');
         }
 
         $list=$result['list'];
 
+        if($is_concise){
+            $list=(collect($list))->pluck('domain','site_id')->toArray();
+        }
+
         return $list;
-
     }
 
-    public function getData()
+    public function getData($param=array())
     {
-        $result=$this->request([
-            'serviceName'=>'report',
-            'methodName'=>'query',
-            'QueryParameterType'=>[
-                'reportid'=>1,
-                'siteid' => '9890037',
-                'start_time' => '20161230',
-                'end_time' => '20161231',
-                'dimensions'=>'pageid',
-                'metrics'=>['pageviews','visitors','ips','entrances','outwards','exits','stayTime','exitRate'],
-                'filter'=>[],
-                'sort'=>[],
-                'start_index'=>0,
-                'max_results'=>10000
-            ]
-        ]);
+        if(!isset($param['site_id'])){
+            $list=$this->getSiteLists();
+            $param['site_id']=$list[0]['site_id'];
+        }
 
-        return $result;
+        $result=$this->request('getData',$param);
 
+        return $result['result'];
     }
 
-    private function request($post_data)
+    private function request($type,$post_data)
     {
         $post_data=[
             'header'=>$this->post_header,
             'body'=>$post_data
         ];
 
-        $result=curl_post(self::API_URL,json_encode($post_data),$this->header);
-        echo $result;exit;
+        $result=curl_post(self::API_URL.'/'.$type,json_encode($post_data),$this->header);
         $result=json_decode($result,true);
 
-        if($result['header']['status']==3){
+        if($result['header']['status']!=0){
             $failure=$result['header']['failures'][0];
             $message='level:'.$result['header']['desc'].';code:'.$failure['code'].';message:'.$failure['message'];
             throw new \Exception($message);
         }
 
-        return $result['body'];
+
+        return $result['body']['data'][0];
     }
 }
