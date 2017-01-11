@@ -42,7 +42,7 @@ class BaiduTongji
 
     private function login()
     {
-        return Cache::remember('baiduTongji-key',3600*6,function(){
+        return Cache::remember('baiduTongji-key',30,function(){
             $this->login=new Login($this->config);
             $this->login->preLogin();
             $this->login->doLogin();
@@ -68,7 +68,7 @@ class BaiduTongji
 
     public function getSiteLists($is_concise=false)
     {
-        $result=Cache::remember('baiduTongji-siteLists',3600*6,function(){
+        $result=Cache::remember('baiduTongji-siteLists',30,function(){
             return $this->request('getSiteList',null);
         });
 
