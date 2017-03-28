@@ -16,7 +16,7 @@ class BaiduTongjiServiceProvider extends ServiceProvider
 
     public function boot()
     {
-        $config_path=__DIR__.'/config.php';
+        $config_path = __DIR__ . '/config.php';
         $this->publishes([
             $config_path => config_path('baidu_tongji.php'),
         ]);
@@ -27,7 +27,7 @@ class BaiduTongjiServiceProvider extends ServiceProvider
 
     public function register()
     {
-        $this->app->singleton('BaiduTongji',function($app){
+        $this->app->singleton('BaiduTongji', function ($app) {
             return new BaiduTongji(config('baidu_tongji'));
         });
     }
