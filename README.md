@@ -6,7 +6,7 @@
 1. 安装包文件
 
   ```shell
-  composer require mushan/baidu-tongji:"1.0"
+  composer require mushan/baidu-tongji:"1.*"
   ```
 
 ## 配置
