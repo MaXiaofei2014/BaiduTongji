@@ -1,22 +1,23 @@
 {
-    "name": "mushan/baidu-tongji",
-    "description": "Laravel 5",
-    "keywords": [
-        "laravel"
-    ],
-    "autoload": {
-        "psr-4": {
-            "Mushan\\BaiduTongji\\": "src/"
-        },
-        "files": [
-            "src/helpers.php"
-        ]
+  "name": "mushan/baidu-tongji",
+  "description": "Laravel 百度统计集成包",
+  "keywords": [
+    "Laravel",
+    "baidu-tongji"
+  ],
+  "autoload": {
+    "psr-4": {
+      "Mushan\\BaiduTongji\\": "src/"
     },
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "mushan",
-            "email": "804216865@qq.com"
-        }
+    "files": [
+      "src/helpers.php"
     ]
+  },
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "mushan",
+      "email": "804216865@qq.com"
+    }
+  ]
 }
