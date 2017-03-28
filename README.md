@@ -34,18 +34,16 @@
 
 namespace App\Http\Controllers;
 
-use
-
 class SiteController extends Controller
 {
 
     public function index()
     {
-        $baiduTongji=resolve('BaiduTongji');
+        $baiduTongji = resolve('BaiduTongji');
 
-        $today=date('Ymd');
-        $yesterday=date('Ymd',strtotime('yesterday'));
-        $result=$baiduTongji->getData([
+        $today = date('Ymd');
+        $yesterday = date('Ymd', strtotime('yesterday'));
+        $result = $baiduTongji->getData([
             'method' => 'trend/time/a',
             'start_date' => $today,
             'end_date' => $today,
